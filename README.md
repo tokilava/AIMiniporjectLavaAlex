@@ -1,0 +1,2 @@
+# AIMiniporjectLavaAlex
+Miniproject in AI
