@@ -54,7 +54,9 @@ X = weatherData.values[:, 1:5]  # features
 Y = weatherData.values[:, 5]  # labels
 
 #Set aside 20% of train and test data for evaluation
+#Do the same for validation data
 X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=0.20, random_state=32, shuffle=True)
+X_train, X_val, Y_train, Y_val = model_selection.train_test_split(X_train, Y_train, test_size=0.25, random_state=32, shuffle=True)
 
 knn.fit(X_train, Y_train)
 predictions = knn.predict(X_test)
