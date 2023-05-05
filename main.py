@@ -7,6 +7,7 @@ from sklearn.svm import SVC
 from sklearn import model_selection
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score
 
 #Load the CSV file to read the weather data
@@ -51,6 +52,11 @@ print("KNN Results", "\n")
 print("Accuracy:", accuracy_score(Y_test, predictions))
 print("Confusion matrix:", "\n", confusion_matrix(Y_test, predictions))
 print("Classification report:", "\n", classification_report(Y_test, predictions), "\n")
+cm = confusion_matrix(Y_test, predictions, labels=knn.classes_)
+color = 'white'
+disp = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels=knn.classes_)
+disp.plot()
+plt.show()
 
 #K-fold cross-validation
 knn = KNeighborsClassifier()
@@ -58,11 +64,3 @@ kfold = model_selection.KFold(n_splits=10, random_state=None, shuffle=False)
 cv_results = model_selection.cross_val_score(knn, X_train, Y_train, cv=kfold, scoring='accuracy')
 print("Generalizability Results", "\n")
 print("KNN average accuracy: %f" % (cv_results.mean()))
-
-#SVM validation
-models = [('KNN', KNeighborsClassifier()), ('SVM', SVC())]
-for name, model in models:
-    kfold = model_selection.KFold(n_splits=10, random_state=7, shuffle=True)
-    cv_results = model_selection.cross_val_score(model, X_train, Y_train, cv=kfold, scoring='accuracy')
-    print("Generalizability Results", "\n")
-    print("%s average accuracy: %f" % (name, cv_results.mean()))
