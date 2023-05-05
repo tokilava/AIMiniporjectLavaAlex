@@ -84,5 +84,5 @@ for k in k_values:
 #Visualize the accuracy for all k-values
 sns.lineplot(x = k_values, y = scores, markers='o')
 plt.xlabel("K-values")
-plt.ylabel("Accuracy for cross-validation")
+plt.ylabel("Accuracy score")
 plt.show()
