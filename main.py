@@ -1,9 +1,8 @@
 import pandas as pd
-from pandas.plotting import scatter_matrix
+import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
 from sklearn import model_selection
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
@@ -30,8 +29,8 @@ print(weatherData)
 #print(weatherData)
 
 #Make a boxplot of the different features
-weatherData.plot(kind='box', subplots=True, layout=(4, 4), sharex=False, sharey=False)
-plt.show()
+#weatherData.plot(kind='box', subplots=True, layout=(4, 4), sharex=False, sharey=False)
+#plt.show()
 
 #Group the data together into weather categories
 print(weatherData.groupby('weather').size())
@@ -45,13 +44,20 @@ Y = weatherData.values[:, 5]  # labels
 X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=0.20, random_state=32, shuffle=True)
 X_train, X_val, Y_train, Y_val = model_selection.train_test_split(X_train, Y_train, test_size=0.25, random_state=32, shuffle=True)
 
+#Create an instance of the KNN model then fit this to our training data
+#After the model is trained, make predictions on the dataset
 knn.fit(X_train, Y_train)
 predictions = knn.predict(X_test)
 
+#Evaluate the model by using accuracy
+#Check the predictions against the actual values in the test set
+#Count of many the model predicted correctly
 print("KNN Results", "\n")
 print("Accuracy:", accuracy_score(Y_test, predictions))
 print("Confusion matrix:", "\n", confusion_matrix(Y_test, predictions))
 print("Classification report:", "\n", classification_report(Y_test, predictions), "\n")
+
+#Create a display window for the confusion matrix with labels
 cm = confusion_matrix(Y_test, predictions, labels=knn.classes_)
 color = 'white'
 disp = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels=knn.classes_)
@@ -59,8 +65,24 @@ disp.plot()
 plt.show()
 
 #K-fold cross-validation
+#Print results to the terminal
 knn = KNeighborsClassifier()
 kfold = model_selection.KFold(n_splits=10, random_state=None, shuffle=False)
 cv_results = model_selection.cross_val_score(knn, X_train, Y_train, cv=kfold, scoring='accuracy')
 print("Generalizability Results", "\n")
 print("KNN average accuracy: %f" % (cv_results.mean()))
+
+#Select a range of values for "k" and store them in an empty array
+k_values = [i for i in range (1, 60)]
+scores = []
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    cv_results = model_selection.cross_val_score(knn, X_train, Y_train, cv=kfold)
+    scores.append(np.mean(cv_results))
+
+#Visualize the accuracy for all k-values
+sns.lineplot(x = k_values, y = scores, markers='o')
+plt.xlabel("K-values")
+plt.ylabel("Accuracy for cross-validation")
+plt.show()
